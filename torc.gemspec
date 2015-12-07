@@ -6,12 +6,12 @@ require 'torc/version'
 Gem::Specification.new do |spec|
   spec.name          = "torc"
   spec.version       = Torc::VERSION
-  spec.authors       = ["TODO: Write your name"]
-  spec.email         = ["TODO: Write your email address"]
+  spec.authors       = ["Nathan Hessler"]
+  spec.email         = ["xmilestegx@gmail.com"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = %q{A Tail Optimized Recursive Call Helper}
+  spec.description   = %q{Not comfortable messing with the flags set in ruby to get Tail Optimized Recursion? Use this helper instead and never blow the stack}
+  spec.homepage      = "github.com/nhessler/"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
