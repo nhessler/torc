@@ -1,23 +1,28 @@
-module MethodStack
-  class << self
-    def record_depth
-      #subtract 1 for the current scope
-      @depth = caller.length - 1 if caller.length - 1 > @depth
-    end
+module StackDepth
+  def initialize(*)
+    reset_depth
+    super
+  end
 
-    def max_depth
-      @depth
-    end
+  def record_depth
+    #subtract 1 for the current scope
+    @depth = caller.length - 1 if caller.length - 1 > @depth
+  end
 
-    def reset_depth
-      @depth = 0
-    end
+  def max_depth
+    @depth || 0
+  end
+
+  def reset_depth
+    @depth = 0
   end
 end
 
 class Base
+  include StackDepth
+
   def factorial(acc, n)
-    MethodStack.record_depth
+    record_depth
     return acc if n <= 1
     factorial acc * n, n - 1
   end
@@ -29,10 +34,11 @@ class Base
 end
 
 class Recursed
+  include StackDepth
   include Torc
 
   def factorial(acc, n)
-    MethodStack.record_depth
+    record_depth
     return acc if n <= 1
     recurse acc * n, n - 1
   end
