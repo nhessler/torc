@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{A Tail Optimized Recursive Call Helper}
   spec.description   = %q{Not comfortable messing with the flags set in ruby to get Tail Optimized Recursion? Use this helper instead and never blow the stack}
-  spec.homepage      = "github.com/nhessler/"
+  spec.homepage      = "https://github.com/nhessler/torc"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
