@@ -103,7 +103,44 @@ RSpec.describe Torc do
       expect(obj.double(5)).to eq(10)
     end
 
-    it 'is unaffected by overriding initialize'
-    it 'does not affect the superclass initialize'
+    it 'is unaffected by when/where/if/how initialize is defined' do
+      assert_doubles_and_initializes = lambda do |klass|
+        instance = klass.new(123)
+        expect(instance.n).to eq(123)
+        expect(instance.double(12)).to eq 24
+      end
+
+      doubler = Class.new {
+        attr_reader :n
+        def double(n, acc=0)
+          return acc if n <= 0
+          recurse(n-1, acc+2)
+        end
+      }
+
+      before_inclusion = Class.new(doubler) {
+        def initialize(n) @n = n end
+        include Torc
+      }
+      assert_doubles_and_initializes[before_inclusion]
+
+      after_inclusion = Class.new(doubler) {
+        include Torc
+        def initialize(n) @n = n end
+      }
+      assert_doubles_and_initializes[after_inclusion]
+
+      superclass  = Class.new(doubler) { include Torc }
+      in_subclass = Class.new(superclass) {
+        def initialize(n) @n = n end
+      }
+      assert_doubles_and_initializes[in_subclass]
+
+      superclass = Class.new(doubler) {
+        def initialize(n) @n = n end
+      }
+      in_superclass = Class.new(superclass) { include Torc }
+      assert_doubles_and_initializes[in_superclass]
+    end
   end
 end
