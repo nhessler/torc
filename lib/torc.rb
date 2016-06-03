@@ -2,28 +2,45 @@ require "torc/version"
 require "binding_of_caller"
 
 module Torc
-
-
-  def Torc.included(basename)
-    basename.class_eval do
-      include Torc::InstanceMethods
+  def tail_call(name, *args)
+    if _torc_state[:loop_stack].empty?
+      recurse name, *args
+    else
+      _torc_state[:swap_to] = [name, args]
+      _torc_state[:finished] = false
     end
   end
 
-  module InstanceMethods
-    def recurse(*args)
-      return [:recurse, args] if instance_variable_defined? :@caller
+  def recurse(*args)
+    name = binding.of_caller(1).eval('__method__')
+    if _torc_state[:loop_stack].last == name
+      _torc_state[:finished] = false
+      return args
+    else
+      _torc_state[:loop_stack].push name
       begin
-        @caller = binding.of_caller(1).eval('__method__')
-        caller_args = [:start, args]
-        loop do
-          caller_args = __send__ @caller, *caller_args.last
-          return caller_args unless caller_args.respond_to? :first
-          return caller_args unless caller_args.first == :recurse
-        end
+        begin
+          _torc_state[:finished] = true
+          args = __send__ name, *args
+          if _torc_state[:swap_to]
+            name, args = _torc_state[:swap_to]
+            _torc_state[:swap_to] = nil
+          end
+        end until _torc_state[:finished]
+        return args
       ensure
-        remove_instance_variable :@caller if instance_variable_defined? :@caller
+        _torc_state[:loop_stack].pop
       end
     end
+  end
+
+  private
+
+  def _torc_state
+    @_torc_state ||= {
+      loop_stack: [],
+      swap_to:    nil,
+      finished:   true,
+    }
   end
 end
