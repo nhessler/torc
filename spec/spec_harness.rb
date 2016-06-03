@@ -33,18 +33,18 @@ class Base
   end
 end
 
-class Recursed
+class Recurring
   include StackDepth
   include Torc
 
   def factorial(acc, n)
     record_depth
     return acc if n <= 1
-    recurse acc * n, n - 1
+    recur acc * n, n - 1
   end
 
   def simple(n)
     return n if n <= 0
-    recurse n - 1
+    recur n - 1
   end
 end

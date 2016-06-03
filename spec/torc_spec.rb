@@ -2,26 +2,25 @@ require 'spec_helper'
 
 RSpec.describe Torc do
   let(:base)     { Base.new }
-  let(:recursed) { Recursed.new }
-  let(:torced)   { Torced.new }
+  let(:recurring){ Recurring.new }
   let(:num)      { rand(100..200) }
 
   it 'has a version number' do
     expect(Torc::VERSION).to be_a_kind_of String
   end
 
-  describe '#recurse' do
+  describe '#recur' do
     it "doesn't alter the answer of the original method" do
-      expect(recursed.factorial(1,20)).to eql(base.factorial(1,20))
+      expect(recurring.factorial(1,20)).to eql(base.factorial(1,20))
     end
 
     it "keeps the stack from growing" do
       base.factorial(1, num)
-      recursed.factorial(1, num)
+      recurring.factorial(1, num)
 
-      recursed_max_stack_depth = 3
-      expected_depth = base.max_depth - (num - recursed_max_stack_depth)
-      expect(recursed.max_depth).to eql(expected_depth)
+      recurring_max_stack_depth = 3
+      expected_depth = base.max_depth - (num - recurring_max_stack_depth)
+      expect(recurring.max_depth).to eql(expected_depth)
     end
 
     it "can solve problems that would normally cause stack overflows" do
@@ -30,7 +29,7 @@ RSpec.describe Torc do
       expect { base.simple(double_stack_size) }
         .to(raise_exception(SystemStackError))
 
-      expect(recursed.simple(double_stack_size)).to eq(0)
+      expect(recurring.simple(double_stack_size)).to eq(0)
     end
 
     it 'can apply recursion to multiple methods' do
@@ -39,12 +38,12 @@ RSpec.describe Torc do
 
         def double(n, acc=0)
           return acc if n <= 0
-          recurse(n-1, acc+2)
+          recur(n-1, acc+2)
         end
 
         def triple(n, acc=0)
           return acc if n <= 0
-          recurse(n-1, acc+3)
+          recur(n-1, acc+3)
         end
       }.new
 
@@ -61,12 +60,12 @@ RSpec.describe Torc do
 
         def cascading_sum(n, acc=0)
           return acc if n <= 0
-          recurse(n-1, acc+sum(n))
+          recur(n-1, acc+sum(n))
         end
 
         def sum(n, acc=0)
           return acc if n <= 0
-          recurse(n-1, acc+n)
+          recur(n-1, acc+n)
         end
       }.new.cascading_sum(3)
 
@@ -98,7 +97,7 @@ RSpec.describe Torc do
       obj = Object.new.extend(Torc)
       def obj.double(n, acc=0)
         return acc if n <= 0
-        recurse(n-1, acc+2)
+        recur(n-1, acc+2)
       end
       expect(obj.double(5)).to eq(10)
     end
@@ -114,7 +113,7 @@ RSpec.describe Torc do
         attr_reader :n
         def double(n, acc=0)
           return acc if n <= 0
-          recurse(n-1, acc+2)
+          recur(n-1, acc+2)
         end
       }
 

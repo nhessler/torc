@@ -4,14 +4,14 @@ require "binding_of_caller"
 module Torc
   def tail_call(name, *args)
     if _torc_state[:loop_stack].empty?
-      recurse name, *args
+      recur name, *args
     else
       _torc_state[:swap_to] = [name, args]
       _torc_state[:finished] = false
     end
   end
 
-  def recurse(*args)
+  def recur(*args)
     name = binding.of_caller(1).eval('__method__')
     if _torc_state[:loop_stack].last == name
       _torc_state[:finished] = false
